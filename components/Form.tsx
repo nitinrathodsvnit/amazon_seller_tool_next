@@ -29,7 +29,7 @@ export default function Form(props:{
     const [categoryId, setCategoryId] = useState("");
     // const [price, setPrice] = useState(999);
     const [shippingType, setShippingType] = useState("");
-    const [shippingRegion, setShippingRegion] = useState("Local");
+    const [shippingRegion, setShippingRegion] = useState("");
 
     useEffect(()=>{
         setFrm({
@@ -51,7 +51,7 @@ export default function Form(props:{
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="price">Price</Label>
             <Input type="number" id="price" min={1} defaultValue={frm.price} 
-              onChange={(e) => setFrm( {...frm, price: parseInt(e.target.value)})}  placeholder="Price" value={frm.price}  />
+              onChange={(e) => setFrm( {...frm, price: parseInt(e.target.value)})}  placeholder="Price" value={frm.price} disabled={!frm.categoryId} />
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="shippingType">Shipping Type</Label>
@@ -60,15 +60,15 @@ export default function Form(props:{
                 label: item.name,
                 value: item._id
               }
-            })} setItem={setShippingType} item={shippingType} />
+            })} setItem={setShippingType} item={shippingType} inputDisabled={!frm.price}/>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="shippingRegion">Shipping Region</Label>
-            <Dropdown items={shippingRegionList} setItem={setShippingRegion} item={shippingRegion} />
+            <Dropdown items={shippingRegionList} setItem={setShippingRegion} item={shippingRegion} inputDisabled={!frm.shippingType}/>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="weight">Weight (in grams)</Label>
-            <Input type="number" min={1} defaultValue={frm.weight} onChange={(e) => setFrm( {...frm, weight: parseInt(e.target.value)})}/>
+            <Input type="number" min={1} defaultValue={frm.weight} onChange={(e) => setFrm( {...frm, weight: parseInt(e.target.value)})} disabled={!frm.shippingRegion}/>
           </div>
         </>
     )

@@ -104,33 +104,33 @@ export default function Result(props: {
             <TableBody>
                 <TableRow>
                     <TableCell>Referral Fees</TableCell>
-                <TableCell>${referralFee}</TableCell> 
+                <TableCell>₹{referralFee}</TableCell> 
                 </TableRow>
                 <TableRow>
                 <TableCell>Closing Fees</TableCell>
-                <TableCell>${closingFee}</TableCell> 
+                <TableCell>₹{closingFee}</TableCell> 
                 </TableRow>
                 <TableRow>
                 <TableCell>Shipping Fees</TableCell>
-                <TableCell>${shippingFee}</TableCell> 
+                <TableCell>₹{shippingFee}</TableCell> 
                 </TableRow>
                 <TableRow>
                 <TableCell>Referral+Closing+Shipping Fees</TableCell>
-                <TableCell>${referralFee + closingFee + shippingFee}</TableCell> 
+                <TableCell>₹{referralFee + closingFee + shippingFee}</TableCell> 
                 </TableRow>
                 <TableRow>
                 <TableCell>GST on Total Fees</TableCell>
-                <TableCell>${(0.18 * (referralFee + closingFee + shippingFee))}</TableCell> 
+                <TableCell>₹{(0.18 * (referralFee + closingFee + shippingFee)).toFixed(2)}</TableCell> 
                 </TableRow>
                 <TableRow>
                 <TableCell>Total Amazon Charges</TableCell>
-                <TableCell>${(1.18 * (referralFee + closingFee + shippingFee))}</TableCell> 
+                <TableCell>₹{(1.18 * (referralFee + closingFee + shippingFee)).toFixed(2)}</TableCell> 
                 </TableRow>
             </TableBody>
             <TableFooter>
                 <TableRow>
                     <TableCell>You Make</TableCell>
-                    <TableCell>{frm.price - (1.18 * (referralFee + closingFee + shippingFee))}</TableCell>
+                    <TableCell>{(frm.price - (1.18 * (referralFee + closingFee + shippingFee))).toFixed(2)}</TableCell>
                 </TableRow>
             </TableFooter>
         </Table>

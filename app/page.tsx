@@ -20,7 +20,7 @@ export default function Home() {
   
   const [frm, setFrm] = useState({
     categoryId: "",
-    price: 999,
+    price: 0,
     shippingType: "",
     shippingFeesObj: "",
     weight: 200,
@@ -41,7 +41,7 @@ export default function Home() {
  let isReady: boolean = (referralFees.length > 0 && closingFees.length > 0 && shippingFees.length > 0);
   return (
     !isReady ? <div className="flex justify-center items-center h-screen w-screen"><Loader /></div>:
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">       
+    <main className="flex min-h-screen flex-col items-center justify-between p-20">       
         <Card className="w-auto">
           <CardHeader>
             <CardTitle>Amazon Seller Margin Calculator</CardTitle>

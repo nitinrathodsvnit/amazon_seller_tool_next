@@ -45,9 +45,9 @@ import {
 
 
 export function Dropdown(props: {
-    items: {value: string, label: string}[], setItem: (value: string) => void, item: string | undefined 
+    items: {value: string, label: string}[], setItem: (value: string) => void, item: string | undefined, inputDisabled?: boolean
 }) {
-  const { items, setItem, item } = props
+  const { items, setItem, item, inputDisabled} = props
   const [open, setOpen] = React.useState(false)
 
 
@@ -59,6 +59,7 @@ export function Dropdown(props: {
           role="combobox"
           aria-expanded={open}
           className="w-[500px] justify-between"
+          disabled={inputDisabled}
         >
           {item
             ? items.find((framework) => framework.value === item)?.label
