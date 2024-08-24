@@ -8,6 +8,8 @@ import { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableC
 import { validateHeaderName } from "http";
 import Form from "@/components/Form";
 import Result from "@/components/Result";
+import Loader from "@/components/Loader"
+
 
 
 
@@ -36,18 +38,19 @@ export default function Home() {
     getQuery("closingfees").then((data)=> setClosingFees(data));
     getQuery("shippingfees").then((data)=> setShippingFees(data));
   },[])
-
+ let isReady: boolean = (referralFees.length > 0 && closingFees.length > 0 && shippingFees.length > 0);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Card className="w-auto">
-        <CardHeader>
-          <CardTitle>Amazon Seller Margin Calculator</CardTitle>
-        </CardHeader>
-        <CardContent>
-        <Form referralFees={referralFees} closingFees={closingFees}  frm={frm} setFrm={setFrm} />
-        <Result referralFees={referralFees} closingFees={closingFees} shippingFees={shippingFees} frm={frm}/>
-        </CardContent>
-      </Card>
+    !isReady ? <div className="flex justify-center items-center h-screen w-screen"><Loader /></div>:
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">       
+        <Card className="w-auto">
+          <CardHeader>
+            <CardTitle>Amazon Seller Margin Calculator</CardTitle>
+          </CardHeader>
+          <CardContent>
+          <Form referralFees={referralFees} closingFees={closingFees}  frm={frm} setFrm={setFrm} />
+          <Result referralFees={referralFees} closingFees={closingFees} shippingFees={shippingFees} frm={frm}/>
+          </CardContent>
+        </Card>
     </main>
   );
 }
