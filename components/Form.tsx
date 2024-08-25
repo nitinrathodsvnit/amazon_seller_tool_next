@@ -41,7 +41,7 @@ export default function Form(props:{
       }, [categoryId, shippingType, shippingRegion])
 
     return (
-        <>
+        <div className="flex flex-col gap-4">
         <Dropdown items={referralFees.map((item:any) => {
           return {
             label: item.name,
@@ -70,6 +70,6 @@ export default function Form(props:{
             <Label htmlFor="weight">Weight (in grams)</Label>
             <Input type="number" min={1} defaultValue={frm.weight} onChange={(e) => setFrm( {...frm, weight: parseInt(e.target.value)})} disabled={!frm.shippingRegion}/>
           </div>
-        </>
+        </div>
     )
 }

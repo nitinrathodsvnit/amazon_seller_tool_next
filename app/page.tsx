@@ -9,6 +9,7 @@ import { validateHeaderName } from "http";
 import Form from "@/components/Form";
 import Result from "@/components/Result";
 import Loader from "@/components/Loader"
+import Chart from "@/components/Chart";
 
 
 
@@ -41,8 +42,9 @@ export default function Home() {
  let isReady: boolean = (referralFees.length > 0 && closingFees.length > 0 && shippingFees.length > 0);
   return (
     !isReady ? <div className="flex justify-center items-center h-screen w-screen"><Loader /></div>:
-    <main className="flex min-h-screen flex-col items-center justify-between p-20">       
-        <Card className="w-auto">
+    <main className="flex flex-col min-h-screen p-10 gap-4">       
+        <div className="flex gap-4 w-full">
+        <Card className="w-auto h-full">
           <CardHeader>
             <CardTitle>Amazon Seller Margin Calculator</CardTitle>
           </CardHeader>
@@ -51,6 +53,8 @@ export default function Home() {
           <Result referralFees={referralFees} closingFees={closingFees} shippingFees={shippingFees} frm={frm}/>
           </CardContent>
         </Card>
+        <Chart referralFees={referralFees} closingFees={closingFees} shippingFees={shippingFees} frm={frm}/>
+        </div>
     </main>
   );
 }

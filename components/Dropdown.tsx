@@ -58,7 +58,7 @@ export function Dropdown(props: {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[500px] justify-between"
+          className=" justify-between"
           disabled={inputDisabled}
         >
           {item
