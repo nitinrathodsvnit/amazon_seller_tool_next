@@ -1,7 +1,15 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, Dot, CartesianGrid, XAxis, LabelList } from "recharts";
+import {
+  Area,
+  AreaChart,
+  Dot,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  LabelList,
+} from "recharts";
 import { useState } from "react";
 
 import {
@@ -34,10 +42,12 @@ export default function Chart(props: {
   frm: any;
 }) {
   const { referralFees, closingFees, shippingFees, frm } = props;
-const [chartData, setChartData] = useState([{
-price: 0,
-profit: 0
-}])
+  const [chartData, setChartData] = useState([
+    {
+      price: 0,
+      profit: 0,
+    },
+  ]);
   function getCharges(frm: any) {
     let fees = 0;
     const cat = referralFees.find((cat) => cat._id === frm.categoryId);
@@ -110,27 +120,24 @@ profit: 0
   }
 
   useEffect(() => {
-    if(frm.shippingRegion != ""){
+    if (frm.shippingRegion != "") {
       let charTempData = [];
       let profit = -1;
-    for (let i = Math.max(frm.price-500, 1); i <= frm.price+500; i++) {
-        profit = i - 1.18 * getCharges({...frm, price:i});
-        charTempData.push({ price: i, profit: Math.round(profit*100)/100 });
+      for (let i = Math.max(frm.price - 500, 1); i <= frm.price + 500; i++) {
+        profit = i - 1.18 * getCharges({ ...frm, price: i });
+        charTempData.push({ price: i, profit: Math.round(profit * 100) / 100 });
       }
       setChartData(charTempData);
-    }else{
+    } else {
       setChartData([]);
     }
-      
   }, [frm]);
 
   return (
     <Card className="grow h-full">
       <CardHeader>
         <CardTitle>Profit vs Price</CardTitle>
-        <CardDescription>
-          Showing Profit vs Price
-        </CardDescription>
+        <CardDescription>Showing Profit vs Price</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -141,7 +148,6 @@ profit: 0
               left: 12,
               right: 12,
             }}
-          
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -149,17 +155,45 @@ profit: 0
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              
+            />
+            <YAxis
+              dataKey="profit"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="dashed"  hideLabel labelFormatter={(value) => {
-                return new Date(value).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })
-              }}/>}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <Card className="rounded-md p-2">
+                      <div className="custom-tooltip">
+                        <p className="label">
+                          Price: <b>₹{label}</b>
+                        </p>
+                        <p className="label">
+                          Profit: <b>₹{payload[0].value}</b>
+                        </p>
+                      </div>
+                    </Card>
+                  );
+                }
+                if (label == frm.price) {
+                  return (
+                    <Card className="rounded-md p-2">
+                      <div className="custom-tooltip">
+                        <p className="label">
+                          Price: <b>₹{label}</b>
+                        </p>
+                        <p className="label">
+                          Profit: <b>₹{}</b>
+                        </p>
+                      </div>
+                    </Card>
+                  );
+                }
+              }}
             />
 
             <Area
@@ -169,40 +203,18 @@ profit: 0
               fill="var(--color-profit)"
               fillOpacity={0.4}
               stroke="var(--color-profit)"
-        
               dot={({ payload, ...props }) => {
                 return (
                   <Dot
-                    key={payload.browser}
+                    key={payload.price}
                     r={4}
-                    fill={payload.price == frm.price ? "hsl(var(--chart-2))" : "transparent"}
+                    fill={"hsl(var(--chart-2))"}
+                    display={payload.price == frm.price ? "block" : "none"}
                     cx={props.cx}
                     cy={props.cy}
                   />
-                )
+                );
               }}
-            >
-            </Area>
-            <Area
-              dataKey="price"
-            //   hide 
-              strokeWidth={0}
-            //   type="linear"
-              fill="none"
-            //   fillOpacity={0.4}
-              
-        
-            //   dot={({ payload, ...props }) => {
-            //     return (
-            //       <Dot
-            //         key={payload.browser}
-            //         r={4}
-            //         fill={payload.price == frm.price ? "hsl(var(--chart-2))" : "transparent"}
-            //         cx={props.cx}
-            //         cy={props.cy}
-            //       />
-            //     )
-            //   }}
             >
             </Area>
           </AreaChart>
