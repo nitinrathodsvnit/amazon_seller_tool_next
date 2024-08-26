@@ -8,7 +8,6 @@ import {
   CartesianGrid,
   XAxis,
   YAxis,
-  LabelList,
 } from "recharts";
 import { useState } from "react";
 
@@ -137,9 +136,12 @@ export default function Chart(props: {
     <Card className="grow h-full">
       <CardHeader>
         <CardTitle>Profit vs Price</CardTitle>
-        <CardDescription>Showing Profit vs Price</CardDescription>
+        <CardDescription>Identify profit break points based on your price range.</CardDescription>
       </CardHeader>
       <CardContent>
+        {
+          chartData.length > 0 ?
+        
         <ChartContainer config={chartConfig}>
           <AreaChart
             accessibilityLayer
@@ -219,8 +221,13 @@ export default function Chart(props: {
             </Area>
           </AreaChart>
         </ChartContainer>
+        :
+        <h1 className="text-4xl font-extrabold lg:text-5xl text-center opacity-10">
+        No Data
+      </h1>
+        }
       </CardContent>
-      <CardFooter>
+      {/* <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 font-medium leading-none">
@@ -231,7 +238,7 @@ export default function Chart(props: {
             </div>
           </div>
         </div>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 }

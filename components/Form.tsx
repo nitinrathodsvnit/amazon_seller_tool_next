@@ -26,19 +26,6 @@ export default function Form(props:{
     frm: any
 }){
     const {referralFees, closingFees, setFrm, frm} = props;
-    const [categoryId, setCategoryId] = useState("");
-    // const [price, setPrice] = useState(999);
-    const [shippingType, setShippingType] = useState("");
-    const [shippingRegion, setShippingRegion] = useState("");
-
-    useEffect(()=>{
-        setFrm({
-          ...frm,
-          categoryId: categoryId,
-          shippingType: shippingType,
-          shippingRegion: shippingRegion
-        })
-      }, [categoryId, shippingType, shippingRegion])
 
     return (
         <div className="flex flex-col gap-4">
@@ -47,10 +34,10 @@ export default function Form(props:{
             label: item.name,
             value: item._id
           }
-        })} setItem={setCategoryId} item={categoryId} />
+        })} setItem={(categoryId:string) => setFrm( {...frm, categoryId: categoryId})} item={frm.categoryId} />
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="price">Price</Label>
-            <Input type="number" id="price" min={1} defaultValue={frm.price} 
+            <Input type="number" id="price" min={1}
               onChange={(e) => setFrm( {...frm, price: parseInt(e.target.value)})}  placeholder="Price" value={frm.price} disabled={!frm.categoryId} />
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -60,15 +47,17 @@ export default function Form(props:{
                 label: item.name,
                 value: item._id
               }
-            })} setItem={setShippingType} item={shippingType} inputDisabled={!frm.price}/>
+            })} setItem={(shippingType:string) => setFrm({...frm, shippingType: shippingType})} item={frm.shippingType} inputDisabled={!frm.price}/>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="shippingRegion">Shipping Region</Label>
-            <Dropdown items={shippingRegionList} setItem={setShippingRegion} item={shippingRegion} inputDisabled={!frm.shippingType}/>
+            <Dropdown items={shippingRegionList} setItem={(region:string) => {
+              setFrm({...frm, shippingRegion: region})
+            }} item={frm.shippingRegion} inputDisabled={!frm.shippingType}/>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="weight">Weight (in grams)</Label>
-            <Input type="number" min={1} defaultValue={frm.weight} onChange={(e) => setFrm( {...frm, weight: parseInt(e.target.value)})} disabled={!frm.shippingRegion}/>
+            <Input type="number" min={1} value={frm.weight} onChange={(e) => setFrm( {...frm, weight: parseInt(e.target.value)})} disabled={!frm.shippingRegion}/>
           </div>
         </div>
     )
