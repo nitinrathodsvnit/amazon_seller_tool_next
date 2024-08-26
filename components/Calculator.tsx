@@ -108,7 +108,7 @@ function AddRecordBox() {
         <DialogHeader>
           <DialogTitle>Add Record</DialogTitle>
           <DialogDescription>
-            Please add calulated product name. Click save when you're done.
+            Please add calulated product name. Click save when you are done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
