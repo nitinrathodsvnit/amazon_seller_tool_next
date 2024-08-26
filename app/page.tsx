@@ -60,7 +60,7 @@ export default function Home() {
           />
         </div>
         <Records />
-        {/* <DataTableDemo /> */}
+        <DataTableDemo />
       </div>
     </main>
   );

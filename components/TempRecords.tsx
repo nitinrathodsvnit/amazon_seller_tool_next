@@ -40,78 +40,36 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const data: Payment[] = [
-    {
-        id: "1",
-        name: "massager",
-        price: 100,
-        shippingtype: "US",
-        profit: 100,
-        listed: true,
-        date: new Date(),
-      },
-      {
-        id: "2",
-        name: "phone",
-        price: 100,
-        shippingtype: "US",
-        profit: 100,
-        listed: true,
-        date: new Date(),
-      },
-      {
-        id: "3",
-        name: "laptop",
-        price: 100,
-        shippingtype: "US",
-        profit: 100,
-        listed: false,
-        date: new Date(),
-      },
-      {
-        id: "4",
-        name: "watch",
-        price: 100,
-        shippingtype: "US",
-        profit: 100,
-        listed: true,
-        date: new Date(),
-      },
-      {
-        id: "5",
-        name: "book",
-        price: 100,
-        shippingtype: "US",
-        profit: 100,
-        listed: false,
-        date: new Date(),
-      },
-      {
-        id: "6",
-        name: "shoes",
-        price: 100,
-        shippingtype: "US",
-        profit: 100,
-        listed: true,
-        date: new Date(),
-      },
+const data: Product[] = [
+  {
+    productName: "massager",
+    price: 100,
+    shippingType: "US",
+    profit: 100,
+    status: "Listed",
+    date: "8/26/2024",
+  },
+  {
+    productName: "phone",
+    price: 100,
+    shippingType: "US",
+    profit: 100,
+    status: "Listed",
+    date: "8/26/2024",
+  },
+  // Add more data as needed
 ]
 
-export type Payment = {
-//   id: string
-//   amount: number
-//   status: "" | "processing" | "success" | "failed"
-//   email: string
-    id: string;
-    name: string;
-    price: number;
-    shippingtype: string;
-    profit: number;
-    listed: boolean;
-    date: Date;
+export type Product = {
+  productName: string
+  price: number
+  shippingType: string
+  profit: number
+  status: string
+  date: string
 }
-
-export const columns: ColumnDef<Payment>[] = [
+ 
+export const columns: ColumnDef<Product>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -135,80 +93,57 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
+    accessorKey: "productName",
+    header: "Product Name",
+    cell: ({ row }) => <div>{row.getValue("productName")}</div>,
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "price",
+    header: "Price",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-
-      // Format the amount as a dollar amount
+      const price = parseFloat(row.getValue("price"))
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
+      }).format(price)
+      return <div>{formatted}</div>
     },
   },
   {
-    id: "actions",
-    enableHiding: false,
+    accessorKey: "shippingType",
+    header: "Shipping Type",
+    cell: ({ row }) => <div>{row.getValue("shippingType")}</div>,
+  },
+  {
+    accessorKey: "profit",
+    header: "Profit",
     cell: ({ row }) => {
-      const payment = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+      const profit = parseFloat(row.getValue("profit"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(profit)
+      return <div>{formatted}</div>
     },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <div className="font-bold">{row.getValue("status")}</div>
+    ),
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => <div>{row.getValue("date")}</div>,
   },
 ]
 
 export default function DataTableDemo() {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
@@ -234,10 +169,10 @@ export default function DataTableDemo() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter product names..."
+          value={(table.getColumn("productName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("productName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -257,7 +192,7 @@ export default function DataTableDemo() {
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value: any) =>
+                    onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
                     }
                   >
