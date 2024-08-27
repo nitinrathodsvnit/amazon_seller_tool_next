@@ -19,14 +19,15 @@ const LandingPage = () => {
           </BlurFade>
           <BlurFade delay={0.5} duration={0.8} inView>
             <h2 className="scroll-m-20 text-center text-4xl tracking-tight whitespace-nowrap">
-              as a marketplace seller with{" "}
-              <span className="font-extrabold inline-block">
+              as a marketplace seller with{" "} 
+              <span className="font-extrabold inline-block"> SellerROI </span>
+              {/* <span className="font-extrabold inline-block">
                 <HyperText
                   className="text-center text-4xl tracking-tight"
                   duration={0.5}
                   text="SellerROI"
                 />
-              </span>
+              </span> */}
             </h2>
           </BlurFade>
         </div>
