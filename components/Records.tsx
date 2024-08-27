@@ -1,7 +1,11 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import {Card} from "@/components/ui/card"
+import * as React from "react"
+import {
+  CaretSortIcon,
+  ChevronDownIcon,
+  DotsHorizontalIcon,
+} from "@radix-ui/react-icons"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,8 +17,20 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@tanstack/react-table"
+
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -22,115 +38,38 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 
-const data: Entry[] = [
+const data: Product[] = [
   {
-    id: "1",
-    name: "massager",
+    productName: "massager",
     price: 100,
-    shippingtype: "US",
+    shippingType: "US",
     profit: 100,
-    listed: true,
+    status: false,
     date: new Date(),
   },
   {
-    id: "2",
-    name: "phone",
+    productName: "phone",
     price: 100,
-    shippingtype: "US",
+    shippingType: "US",
     profit: 100,
-    listed: true,
+    status: true,
     date: new Date(),
   },
-  {
-    id: "3",
-    name: "laptop",
-    price: 100,
-    shippingtype: "US",
-    profit: 100,
-    listed: false,
-    date: new Date(),
-  },
-  {
-    id: "4",
-    name: "watch",
-    price: 100,
-    shippingtype: "US",
-    profit: 100,
-    listed: true,
-    date: new Date(),
-  },
-  {
-    id: "5",
-    name: "book",
-    price: 100,
-    shippingtype: "US",
-    profit: 100,
-    listed: false,
-    date: new Date(),
-  },
-  {
-    id: "6",
-    name: "shoes",
-    price: 100,
-    shippingtype: "US",
-    profit: 100,
-    listed: true,
-    date: new Date(),
-  },
-];
+  // Add more data as needed
+]
 
-export type Entry = {
-  id: string;
-  name: string;
-  price: number;
-  shippingtype: string;
-  profit: number;
-  listed: boolean;
+export type Product = {
+  productName: string
+  price: number
+  shippingType: string
+  profit: number
+  status: boolean
   date: Date;
-};
-
-export const columns: ColumnDef<Entry>[] = [
-  {
-    id: "name",
-    accessorKey: "name",
-    header: "Product Name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
-  },
-  {
-    id: "price",
-    accessorKey: "price",
-    header: "Price",
-    cell: ({ row }) => <div>{row.getValue("price")}</div>,
-  },
-  {
-    id: "shippingtype",
-    accessorKey: "shippingtype",
-    header: "Shipping Type",
-    cell: ({ row }) => <div>{row.getValue("shippingtype")}</div>,
-  },
-  {
-    id: "profit",
-    accessorKey: "profit",
-    header: "Profit",
-    cell: ({ row }) => <div>{row.getValue("profit")}</div>,
-  },
-  {
-    id: "listed",
-    accessorKey: "listed",
-    header: "Status",
-    cell: ({ row }) => <div>{row.getValue("listed") ? <p className="text-green-500 font-bold">Listed</p> : <p  className="text-red-500 font-bold">Unlisted</p>}</div>,
-  },
-  {
-    id: "date",
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => {
-      const d = new Date(row.getValue("date"));
-      return <div>{d.toLocaleDateString()}</div>;
-    },
-  },
+}
+ 
+export const columns: ColumnDef<Product>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -153,67 +92,192 @@ export const columns: ColumnDef<Entry>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-];
+  {
+    accessorKey: "productName",
+    header: "Product Name",
+    cell: ({ row }) => <div>{row.getValue("productName")}</div>,
+  },
+  {
+    accessorKey: "price",
+    header: "Price",
+    cell: ({ row }) => {
+      const price = parseFloat(row.getValue("price"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(price)
+      return <div>{formatted}</div>
+    },
+  },
+  {
+    accessorKey: "shippingType",
+    header: "Shipping Type",
+    cell: ({ row }) => <div>{row.getValue("shippingType")}</div>,
+  },
+  {
+    accessorKey: "profit",
+    header: "Profit",
+    cell: ({ row }) => {
+      const profit = parseFloat(row.getValue("profit"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(profit)
+      return <div>{formatted}</div>
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <div>{row.getValue("status") ? <p className="text-green-500 font-bold">Listed</p> : <p  className="text-red-500 font-bold">Unlisted</p>}</div>,
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => {
+      const d = new Date(row.getValue("date"));
+      return <div>{d.toLocaleDateString()}</div>;
+    },
+  },
+]
 
-export default function Records() {
-  const [rowSelection, setRowSelection] = React.useState({});
+export default function DataTableDemo() {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
     data,
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
       rowSelection,
     },
-  });
+  })
 
   return (
-    <Card>
-        <div className="w-full">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
+    <div className="w-full">
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter product names..."
+          value={(table.getColumn("productName")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("productName")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
                 return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                )
               })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
-    </Card>
-  );
+  )
 }

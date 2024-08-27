@@ -7,7 +7,6 @@ import Chart from "@/components/Chart";
 import Calculator from "@/components/Calculator";
 import Records from "@/components/Records";
 import Navbar from "@/components/Navbar";
-import Landing from "@/components/Landing";
 
 export default function Home() {
   const [referralFees, setReferralFees] = useState([]);
@@ -43,11 +42,11 @@ export default function Home() {
       <Loader />
     </div>
   ) : (
-    <main className="flex flex-col min-h-screen gap-4 px-4">
-      <Navbar />
-      <Landing />
-      {/* <div className="flex flex-col gap-4">
+    <main className="flex flex-col min-h-screen gap-4 px-4 pt-20">
+        <Navbar />
+        <div className="flex flex-col gap-4">
         <div className="flex gap-4 w-full">
+
           <Calculator
             frm={frm}
             setFrm={setFrm}
@@ -63,7 +62,7 @@ export default function Home() {
           />
         </div>
         <Records />
-      </div> */}
+      </div>
     </main>
   );
 }
