@@ -1,11 +1,12 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import { useEffect, useState } from "react";
+import * as React from "react";
 import {
   CaretSortIcon,
   ChevronDownIcon,
   DotsHorizontalIcon,
-} from "@radix-ui/react-icons"
+} from "@radix-ui/react-icons";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -17,10 +18,10 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -29,8 +30,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -38,38 +39,70 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-
-const data: Product[] = [
-  {
-    productName: "massager",
-    price: 100,
-    shippingType: "US",
-    profit: 100,
-    status: false,
-    date: new Date(),
-  },
-  {
-    productName: "phone",
-    price: 100,
-    shippingType: "US",
-    profit: 100,
-    status: true,
-    date: new Date(),
-  },
-  // Add more data as needed
-]
+} from "@/components/ui/table";
+import { useUser } from "@clerk/nextjs";
 
 export type Product = {
-  productName: string
-  price: number
-  shippingType: string
-  profit: number
-  status: boolean
-  date: Date;
-}
- 
+  productName: string;
+  price: number;
+  shippingType: string;
+  profit: number;
+  status: string;
+  createdAt: Date;
+};
+
 export const columns: ColumnDef<Product>[] = [
+  {
+    accessorKey: "productName",
+    header: "Product Name",
+    cell: ({ row }) => <div>{row.getValue("productName")}</div>,
+  },
+  {
+    accessorKey: "price",
+    header: "Price",
+    cell: ({ row }) => {
+      const price = parseFloat(row.getValue("price"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(price);
+      return <div>{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "shippingType",
+    header: "Shipping Type",
+    cell: ({ row }) => <div>{row.getValue("shippingType")}</div>,
+  },
+  {
+    accessorKey: "profit",
+    header: "Profit",
+    cell: ({ row }) => {
+      const profit = parseFloat(row.getValue("profit"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(profit);
+      return <div>{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <div>
+        <p className={`${row.getValue("status") == "Listed" ? "text-green-500"  : "text-red-500"} font-bold`}>{row.getValue("status")}</p>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Date",
+    cell: ({ row }) => {
+      const d = new Date(row.getValue("createdAt"));
+      return <div>{d.toLocaleDateString()}</div>;
+    },
+  },
   {
     id: "select",
     header: ({ table }) => (
@@ -92,63 +125,35 @@ export const columns: ColumnDef<Product>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "productName",
-    header: "Product Name",
-    cell: ({ row }) => <div>{row.getValue("productName")}</div>,
-  },
-  {
-    accessorKey: "price",
-    header: "Price",
-    cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"))
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(price)
-      return <div>{formatted}</div>
-    },
-  },
-  {
-    accessorKey: "shippingType",
-    header: "Shipping Type",
-    cell: ({ row }) => <div>{row.getValue("shippingType")}</div>,
-  },
-  {
-    accessorKey: "profit",
-    header: "Profit",
-    cell: ({ row }) => {
-      const profit = parseFloat(row.getValue("profit"))
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(profit)
-      return <div>{formatted}</div>
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <div>{row.getValue("status") ? <p className="text-green-500 font-bold">Listed</p> : <p  className="text-red-500 font-bold">Unlisted</p>}</div>,
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => {
-      const d = new Date(row.getValue("date"));
-      return <div>{d.toLocaleDateString()}</div>;
-    },
-  },
-]
+];
 
-export default function DataTableDemo() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+export default function Records(props: { records: any; setRecords: any }) {
+  const { records, setRecords } = props;
+  const { user } = useUser();
+  const [data, setData] = useState<Product[]>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+
+  async function deleteRecords(idList: string[]) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}records`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        idList,
+        userId: user?.id,
+      }),
+    });
+  }
+
+  useEffect(() => {
+  }, [rowSelection]);
 
   const table = useReactTable({
-    data,
+    data: records,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -164,45 +169,70 @@ export default function DataTableDemo() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+        Records
+      </h3>
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter product names..."
-          value={(table.getColumn("productName")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("productName")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("productName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            variant="destructive"
+            disabled={Object.keys(rowSelection).length === 0}
+            onClick={() => {
+              let idList = [];
+              for (const id of Object.keys(rowSelection)) {
+                idList.push(records[id]._id);
+              }
+              deleteRecords(idList).then(() => {
+                setRecords(
+                  records.filter((record: any) => !idList.includes(record._id))
+                );
+              });
+              setRowSelection({});
+            }}
+          >
+            Delete selected
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -219,7 +249,7 @@ export default function DataTableDemo() {
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -279,5 +309,5 @@ export default function DataTableDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }

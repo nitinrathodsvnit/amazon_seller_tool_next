@@ -16,8 +16,10 @@ export default function Result(props: {
   closingFees: any[];
   shippingFees: any[];
   frm: any;
+  totalFees: number;
+  setTotalFees: (totalFees: number) => void;
 }) {
-  const { referralFees, closingFees, shippingFees, frm } = props;
+  const { referralFees, closingFees, shippingFees, frm, totalFees, setTotalFees } = props;
   const [referralFee, setReferralFee] = useState(0);
   const [closingFee, setClosingFee] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
@@ -49,7 +51,7 @@ export default function Result(props: {
 
     /*************#######################################****************/
     // calculate closing fees
-    const sType = closingFees.find((type) => type._id === frm.shippingType);
+    const sType = closingFees.find((type) => type.name === frm.shippingType);
     if (frm.price > 999) {
       if (sType) {
         setClosingFee(
@@ -109,6 +111,10 @@ export default function Result(props: {
       }
     }
   }, [frm, referralFees, closingFees, shippingFees]);
+
+  useEffect(()=>{
+    setTotalFees(referralFee + closingFee + shippingFee);
+  }, [referralFee, closingFee, shippingFee]);
 
   return (
     <Table>

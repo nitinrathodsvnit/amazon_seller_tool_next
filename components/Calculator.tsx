@@ -13,8 +13,8 @@ import {
 import { Button } from "./ui/button";
 import Form from "./Form";
 import Result from "./Result";
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -22,9 +22,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
 
 export default function Calculator(props: {
   frm: any;
@@ -32,8 +34,20 @@ export default function Calculator(props: {
   referralFees: any[];
   closingFees: any[];
   shippingFees: any[];
+  records: any[];
+  setRecords: any;
 }) {
-  const { frm, setFrm, referralFees, closingFees, shippingFees } = props;
+  const [totalFees, setTotalFees] = useState(0);
+  const {
+    frm,
+    setFrm,
+    referralFees,
+    closingFees,
+    shippingFees,
+    records,
+    setRecords,
+  } = props;
+  const { isSignedIn, user } = useUser();
   return (
     <Card className="w-auto h-full">
       <CardHeader>
@@ -51,10 +65,20 @@ export default function Calculator(props: {
           closingFees={closingFees}
           shippingFees={shippingFees}
           frm={frm}
+          totalFees={totalFees}
+          setTotalFees={setTotalFees}
         />
         <div className="flex flex-row justify-end itmes-center gap-4">
           <ResetConfirm setFrm={setFrm} />
-          <AddRecordBox />
+          {isSignedIn && (
+            <AddRecordBox
+              frm={frm}
+              records={records}
+              setRecords={setRecords}
+              totalFees={totalFees}
+              user={user}
+            />
+          )}
         </div>
       </CardContent>
     </Card>
@@ -98,12 +122,25 @@ function ResetConfirm(props: { setFrm: (frm: any) => void }) {
     </AlertDialog>
   );
 }
-function AddRecordBox() {
+function AddRecordBox(props: {
+  frm: any;
+  user: any;
+  records: any;
+  setRecords: (records: any[]) => void;
+  totalFees: number;
+}) {
+  const { frm, user, records, setRecords, totalFees } = props;
+  const { isSignedIn } = useUser();
+  const [name, setName] = useState("");
+  const [listed, setListed] = useState("No");
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Add Record</Button>
+        <Button disabled={!isSignedIn || frm.shippingType === ""}>
+          Add Record
+        </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Record</DialogTitle>
@@ -116,27 +153,66 @@ function AddRecordBox() {
             <Label htmlFor="name" className="text-right">
               Product Name
             </Label>
-            <Input id="name" placeholder="Product Name" className="col-span-3" />
+            <Input
+              id="name"
+              placeholder="Product Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="col-span-3"
+            />
             <Label htmlFor="" className="text-right">
               Product listed on amazon ?
             </Label>
-            <RadioGroup defaultValue="No" >
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Yes" id="r1" />
-                    <Label htmlFor="r1">Yes</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="No" id="r2" />
-                    <Label htmlFor="r2">No</Label>
-                </div>
+            <RadioGroup
+              defaultValue="No"
+              value={listed}
+              onValueChange={(value) => setListed(value)}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Yes" id="r1" />
+                <Label htmlFor="r1">Yes</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="No" id="r2" />
+                <Label htmlFor="r2">No</Label>
+              </div>
             </RadioGroup>
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          <Button
+            disabled={name == ""}
+            type="submit"
+            onClick={() => {
+              addRecord({
+                productName: name,
+                price: frm.price,
+                shippingType: frm.shippingType,
+                profit: (frm.price - 1.18 * totalFees).toFixed(2),
+                status: listed == "Yes" ? "Listed" : "Unlisted",
+                createdBy: user.id,
+              }).then((data) => {
+                console.log(data);
+                setRecords([...records, data]);
+              });
+            }}
+          >
+            Save changes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
+async function addRecord(record: any) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}records`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(record),
+  });
+  const data = await res.json();
+  return data;
+}

@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
           }} />
           </div>
         ) : (
-          <SignUpButton mode="modal">
+          <SignUpButton mode="modal" signInForceRedirectUrl={"/"}>
             <Button
               variant="outline"
               className="bg-white text-black rounded-lg p-5"

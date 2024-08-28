@@ -65,7 +65,7 @@ export default function Chart(props: {
       }
     }
 
-    const sType = closingFees.find((type) => type._id === frm.shippingType);
+    const sType = closingFees.find((type) => type.name === frm.shippingType);
     if (frm.price > 999) {
       if (sType) {
         fees += sType.PriceRange[sType.PriceRange.length - 1].fixedClosingFee;

@@ -45,7 +45,7 @@ export default function Form(props:{
             <Dropdown items={closingFees.map((item:any) =>{
               return {
                 label: item.name,
-                value: item._id
+                value: item.name
               }
             })} setItem={(shippingType:string) => setFrm({...frm, shippingType: shippingType})} item={frm.shippingType} inputDisabled={!frm.price}/>
           </div>
