@@ -70,15 +70,14 @@ export default function Calculator(props: {
         />
         <div className="flex flex-row justify-end itmes-center gap-4">
           <ResetConfirm setFrm={setFrm} />
-          {isSignedIn && (
-            <AddRecordBox
-              frm={frm}
-              records={records}
-              setRecords={setRecords}
-              totalFees={totalFees}
-              user={user}
-            />
-          )}
+          ]
+          <AddRecordBox
+            frm={frm}
+            records={records}
+            setRecords={setRecords}
+            totalFees={totalFees}
+            user={user}
+          />
         </div>
       </CardContent>
     </Card>
