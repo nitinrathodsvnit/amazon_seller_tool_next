@@ -70,7 +70,6 @@ export default function Calculator(props: {
         />
         <div className="flex flex-row justify-end itmes-center gap-4">
           <ResetConfirm setFrm={setFrm} />
-          ]
           <AddRecordBox
             frm={frm}
             records={records}
