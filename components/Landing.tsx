@@ -32,7 +32,9 @@ const LandingPage = () => {
           </BlurFade>
         </div>
 
-        <div className="z-10 flex min-h-[10rem] items-center justify-center">
+        <div className="z-10 flex min-h-[10rem] items-center justify-center" onClick={() => {
+          return window.location.href = "/calculator";
+        }}>
           <BlurFade delay={0.75} duration={0.8} inView>
             <ShimmerButton className="shadow-2xl py-5 px-8">
               <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
